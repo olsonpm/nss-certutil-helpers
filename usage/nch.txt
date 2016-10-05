@@ -1,0 +1,17 @@
+Description: NSS certutil helpers
+
+Usage: nch [options] <command>
+
+Optional arguments
+  -h|--help     Print this
+  -v|--version  Print version of this tool
+
+Commands
+  create-cert  Create a certificate
+  create-csr   Create a certificate signing request
+  create-db    Create empty-password certificate and key databases
+  export-cert  Export certificate data
+  import-cert  Import certificate data
+  sign-csr     Signs a csr, outputting a signed certificated
+
+To get help for a command, type 'nch <command> --help'

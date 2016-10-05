@@ -1,0 +1,21 @@
+Description: Create a certificate key pair that's stored in your current
+             directory's database.
+
+Example: create-cert --common-name test.localhost \
+                     --nickname test-server \
+                     --signed-by test-root
+
+Required arguments
+  -c|--common-name  For server certificates, this must be the domain name.
+                    For client and root certificates, it just has to
+                    be unique.
+  -n|--nickname     An identifier used specifically within the nss database and
+                    will be used in other commands to reference
+                    this certificate.  Spaces should technically work, but don't
+                    use them.
+  -s|--signed-by    Must be either a nickname of a root certificate in the
+                    current directory's database, or the string 'self'
+                    indicating a self-signed root certificate.
+
+Optional arguments
+  -h|--help         Print this

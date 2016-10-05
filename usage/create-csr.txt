@@ -1,0 +1,10 @@
+Description: Create a certificate signing request that the root ca will consume
+
+Example: create-csr --common-name test-client-cn > test-client-nick.crt
+
+Required arguments
+  -c|--common-name  The common name for the certificate-to-be.  Remember a
+                    server's common name must be its domain.
+
+Optional arguments
+  -h|--help         Print this

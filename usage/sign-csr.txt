@@ -1,0 +1,12 @@
+Description: Sign a csr, outputting a signed certificate
+
+Example: sign-csr --ca-nickname test-root \
+                  --csr-filepath ../client/test-client-nick.csr \
+                  > ../client/test-client-nick.crt
+
+Required arguments
+  -n|--ca-nickname   The root certificate authority identifier
+  -f|--csr-filepath  The csr filepath
+
+Optional arguments
+  -h|--help          Print this

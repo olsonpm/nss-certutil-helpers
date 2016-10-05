@@ -1,0 +1,8 @@
+Description: Create empty-password certificate and key databases
+
+Example: create-db --directory ./client
+
+Optional arguments
+  -d|--directory  Default './'.  The directory to create the databases in.
+                  The directory will be created if it doesn't already exist.
+  -h|--help       Print this

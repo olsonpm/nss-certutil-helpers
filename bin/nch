@@ -1,0 +1,127 @@
+#!/usr/bin/env sh
+
+ROOT_DIR="$( cd "$( dirname "${0}" )/.." && pwd )"
+export ROOT_DIR
+
+
+#---------#
+# Imports #
+#---------#
+
+# shellcheck source=/dev/null
+. "${ROOT_DIR}/lib/import.sh"
+import log
+import print-usage
+
+
+#--------------------#
+# Check Dependencies #
+#--------------------#
+
+deps=''
+command -v certutil >/dev/null 2>&1 || { deps="certutil ${deps}"; }
+command -v openssl >/dev/null 2>&1 || { deps="openssl ${deps}"; }
+command -v pk12util >/dev/null 2>&1 || { deps="pk12util ${deps}"; }
+
+if [ "${deps}" != '' ]; then
+  log_error "The following must be installed before you can use nch: ${deps}\n"
+  exit 1
+fi
+
+
+#------#
+# Init #
+#------#
+
+print_version() {
+  printf "You are using nch version: %s\n" "${VERSION}"
+}
+
+usage() {
+  print_usage 'nch' "${1}"
+}
+
+#------#
+# Main #
+#------#
+
+# handle options
+while getopts ":hv-:" opt; do
+  case "${opt}" in
+  	-)
+      case "${OPTARG}" in
+		    help)
+	        usage 1
+	        exit 0
+	        ;;
+        version)
+          print_version
+          exit 0
+          ;;
+		    *)
+	        log_error "Unknown option '--${OPTARG}'\n"
+          usage 2
+          exit 1
+	        ;;
+      esac
+      ;;
+	  h)
+      usage 1
+      exit 0
+      ;;
+    v)
+      print_version
+      exit 0
+      ;;
+	  \?)
+      log_error "Invalid option given: -${OPTARG}\n"
+      usage 2
+      exit 1
+      ;;
+	  :)
+      log_error "Option -${OPTARG} requires an argument\n"
+      usage 2
+      exit 1
+      ;;
+	  *)
+      log_error "Invalid option given: -${OPTARG}\n"
+      usage 2
+      exit 1
+      ;;
+  esac
+done
+
+# handle command
+if [ "$#" = 0 ]; then
+  log_error "Must provide a command.\n"
+  usage 2
+  exit 1
+fi
+
+command="${1}"
+shift
+case "${command}" in
+  create-cert)
+    "${ROOT_DIR}/commands/create-cert.sh" "${@}"
+    ;;
+  create-csr)
+    "${ROOT_DIR}/commands/create-csr.sh" "${@}"
+    ;;
+  create-db)
+    "${ROOT_DIR}/commands/create-db.sh" "${@}"
+    ;;
+  export-cert)
+    "${ROOT_DIR}/commands/export-cert.sh" "${@}"
+    ;;
+  import-cert)
+    "${ROOT_DIR}/commands/import-cert.sh" "${@}"
+    ;;
+  sign-csr)
+    "${ROOT_DIR}/commands/sign-csr.sh" "${@}"
+    ;;
+  *)
+    log_error "\nInvalid command: ${1}\n"
+    usage 2
+    exit 1
+    ;;
+esac

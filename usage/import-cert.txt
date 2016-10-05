@@ -1,0 +1,13 @@
+Description: Import certificate data from a file into your current directory's
+             database.
+
+Example: import-cert --nickname test-root \
+                     --filepath ../test-root.crt.pem
+
+Required arguments
+  -f|--filepath  The certificate to be imported.
+  -n|--nickname  Gives the imported certificate an identifier.
+
+Optional arguments
+  -r|--is-root   Determines the trust level
+  -h|--help      Print this

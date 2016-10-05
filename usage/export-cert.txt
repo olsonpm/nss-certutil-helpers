@@ -1,0 +1,27 @@
+Description: Export certificate data stored in your current directory's
+             database.  By default, the certificate chain as well as the
+             unencrypted private key will be exported to the current directory
+             with the filename '<nickname>.(all|crt|chain|key).pem'.  If the
+             private key is exported (via default or --key-only), then
+             permissions will be umasked to a resulting 400 (owner read-only).
+
+Example: export-cert --nickname test-server \
+                     --filepath ./server.pem
+
+Required arguments
+  -n|--nickname    Identifies the certificate to be exported.
+
+Optional arguments
+  -c|--cert-only   A boolean flag indicating only the leaf certificate should
+                   be exported.  File permissions will be left as-is.
+  -a|--chain-only  A boolean flag indicating only the certificate chain should
+                   be exported.  File permissions will be left as-is.
+  -f|--filepath    The exported file.
+  -k|--key-only    A boolean flag indicating only the private key should
+                   be exported.  File permissions will be set to 400
+                   (owner read-only)
+  -r|--format      A string indicating the output of the format.  'pem' is the
+                   default, with the only other option being 'p12'.  Also note
+                   'p12' is mutually exclusive with any of the '*-only' flags
+                   since p12 packages all the data.
+  -h|--help        Print this
