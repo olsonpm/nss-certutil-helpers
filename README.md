@@ -1,9 +1,26 @@
 # NSS certutil helpers -> `nch`
 
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
+- [What is it?](#what-is-it)
+- [Why create it?](#why-create-it)
+- [How can it help me?](#how-can-it-help-me)
+- [Before I get technical](#before-i-get-technical)
+- [To install](#to-install)
+- [The functionality](#the-functionality)
+- [Tutorial](#tutorial)
+- [Referenced documentation](#referenced-documentation)
+- [Other supporting links I found helpful](#other-supporting-links-i-found-helpful)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+
+
 ## What is it?
 
-Just a friendly, narrow-focused command line wrapper to the certutil tool with
-the goal of easily creating mutual ssl authentication.
+Just a friendly, narrow-focused command line wrapper to `certutil` with the goal
+of easily creating mutual ssl authentication<sup>[5](#referenced-documentation)</sup>.
 
 
 ## Why create it?
@@ -19,8 +36,9 @@ for personal ssl use.
 
 ## Before I get technical
 Supporting documentation I found helpful is listed at the bottom, though a large
-thanks is due to Firstyear whose blog post listed and explained the pieces
-fairly well.  It was just missing an example pulling them all together.
+thanks is due to Firstyear<sup>[1](#referenced-documentation)</sup> whose blog
+post listed and explained the pieces fairly well.  It was just missing an
+example pulling them all together.
 
 
 ## To install
@@ -44,21 +62,21 @@ This program should be self-exploratory.  Type `nch --help` to begin.
 
 Understand a lot of the naming I used is specific to the context of this tool.
 For instance I use the term 'root' when really 'ca' would be more general,
-however since this tool only addresses a single-level hierarchy, 'root' is more
-apt.
+however since this tool only addresses a single-level hierarchy
+<sup>[2](#referenced-documentation)</sup>, 'root' is more apt.
 
 In short, `nch` provides the following
  - Create
-   - The cert and key databases
+   - The cert and key databases<sup>[3](#referenced-documentation)</sup>
    - A certificate
-   - A CSR (Certificate signing request)
+   - A CSR (Certificate signing request)<sup>[4](#referenced-documentation)</sup>
 
  - Sign, Export, and Import a certificate
 
 
 ## Tutorial
 This goes through the process of setting up mutual ssl authentication between a
-node server and curl script.  If you're not interested in node, then all but the
+node server and curl script. If you're not interested in node, then all but the
 last few steps will still be relevant.  Each step should explain what to do, my
 (admittedly unexperienced) understanding of why, and finally the
 non-helper equivalent.
@@ -74,8 +92,8 @@ $ mkdir mutual-ssl && cd mutual-ssl
 2) Create directories 'nss', 'node', and 'curl'.
  - `nss`: holds our nss databases for generating and interacting with our
 certificates
- - `node`: holds our node server and its certificate
- - `curl`: holds the curl script (client) and its certificate
+ - `node`: holds our node server and its supporting certificates/keys
+ - `curl`: holds the curl script (client) and its supporting certificates/keys
 ```sh
 $ mkdir nss node curl && cd nss
 ```
@@ -97,8 +115,8 @@ $ mkdir root
 $ certutil -N -d root --empty-password
 ```
 
-4) Create a self-signed root certificate.  This will be used to sign our server
-and client certificates
+4) Create a self-signed root certificate<sup>[6](#referenced-documentation)</sup>.
+This will be used to sign our server and client certificates.
 ```sh
 $ cd root
 $ nch create-cert --common-name 'test-root-cn' \
@@ -110,8 +128,7 @@ $ nch create-cert --common-name 'test-root-cn' \
 $ certutil -S -n 'test-root-nick' -t 'C,C,C' -x -d . -s 'CN=test-root-cn'
 ```
 
-5) Now let's export this certificate so we can import it into our server and
-client databases
+5) Now let's export this certificate so we can import it into our server database.
 ```sh
 $ nch export-cert --nickname 'test-root-nick' --cert-only
 
@@ -136,7 +153,12 @@ $ nch import-cert --nickname 'test-root-nick' \
 $ certutil -A -n 'test-root-nick' -t 'C,C,C' -i ../root/test-root-nick.crt -d .
 ```
 
-7) Create a CSR for our client and server each.
+7) Create a CSR for our client and server each.  
+<br>
+\**Note the server has a common-name 'localhost'.  This is the domain our node
+server will be serving, and ssl requires the common-name to match the domain.
+There's no functional requirement for the root and client common-names besides
+their being unique*
 ```sh
 $ cd ../server
 $ nch create-csr --common-name 'localhost' > test-server-nick.csr
@@ -149,8 +171,9 @@ $ nch create-csr --common-name 'test-client-cn' > test-client-nick.csr
 $ certutil -d . -R -s 'CN=localhost'
 ```
 
-8) Sign the CSR using our root CA.  Since both our server and client will trust
-the root CA, they can trust each other's signed certificates.
+8) Sign the CSR using our root CA<sup>[7](#referenced-documentation)</sup>.
+Since both our server and client will trust the root CA, they can trust each
+other's signed certificates.
 ```sh
 $ cd ../root
 
@@ -168,9 +191,10 @@ $ certutil -C -d . -i ../server/test-server-nick.csr -c 'test-root-nick'
 ```
 
 9) Import the signed certificate.  This will complete our server and client
-databases, meaning they will each have a private key, a signed public
-certificate, and the chain of certificates leading up to the self-signed
-trusted CA (in our case, the 'chain' is just the root -> client/server)
+databases, meaning they will each have a private key and a signed public
+certificate.  The server will also have the chain of certificates leading up to
+the self-signed trusted CA (in our case, the 'chain' is just the
+root -> client/server)
 ```sh
 $ cd ../server
 $ nch import-cert --filepath test-server-nick.crt \
@@ -185,6 +209,7 @@ $ certutil -A -n 'test-server-nick' -t ',,' -i test-client-nick.crt -d .
 ```
 
 10) Export the data necessary for each our node server and curl script (client)
+ - p12 format information<sup>[8](#referenced-documentation)</sup>
 ```sh
 # The p12 file encompasses the certificate chain as well as the private key
 $ cd ../server
@@ -217,11 +242,47 @@ $ nch export-cert --nickname 'test-client-nick' \
 11) You are now all set up to create the node server.  I have a minimal one
 in the repo that you can copy-paste, just make sure you have node v6+ installed
 ```sh
-cd ../server
-wget https://rawgit.com/olsonpm/nss-certutil-helpers/master/resources/node/{package.json,server.js}
-
+cd ../../node
+wget https://raw.githubusercontent.com/olsonpm/nss-certutil-helpers/master/resources/node/package.json
+wget https://raw.githubusercontent.com/olsonpm/nss-certutil-helpers/master/resources/node/server.js
+npm install
+node server # will output "server listening on port 8xxx"
 ```
 
-## Supporting documentation
-p12 - https://www.ssl.com/how-to/create-a-pfx-p12-certificate-file-using-openssl/
-certutil howto - http://firstyear.id.au/blog/html/2014/07/10/NSS-OpenSSL_Command_How_to:_The_complete_list..html
+12) And finally the curl script
+```sh
+cd ../curl
+# you can specify the --verbose option if you care about the details of
+#  the communication
+curl --cacert ./test-root-nick.crt.pem \
+  --cert ./test-client-nick.crt.pem \
+  --key ./test-client-nick.key.pem \
+  https://localhost:<server port here>
+
+# should output:
+# can I get a "woo!" for mutual ssl authentication?
+```
+
+### You done breh
+
+## Referenced documentation
+1. [certutil how-to](http://firstyear.id.au/blog/html/2014/07/10/NSS-OpenSSL_Command_How_to:_The_complete_list..html)
+2. Single level hierarchy (as opposed to multi-level)
+ - A single level hierarchy just means there doesn't exist intermediary
+   certificate authorities.  This is considered bad practice, however for
+   personal use is just fine.
+ - [Why does a Certificate Authority (CA) issue certificates from an intermediate authority instead of the root authority?](https://stackoverflow.com/questions/26659333/why-does-a-certificate-authority-ca-issue-certificates-from-an-intermediate-au)
+ - [Benefits of Multiple-Level Certification Hierarchies](https://technet.microsoft.com/en-us/library/cc962078.aspx)
+3. [New sqlite key and cert databases](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Developer_Guide/che-nsslib.html)
+ - [transition to sqlite db](https://wiki.mozilla.org/NSS_Shared_DB)
+4. [Certificate Signing Request](https://en.wikipedia.org/wiki/Certificate_signing_request)
+5. [Two way ssl clarification](http://stackoverflow.com/questions/10725572/two-way-ssl-clarification)
+6. [Self signed certificate](https://en.wikipedia.org/wiki/Self-signed_certificate)
+7. [What does it mean for a digital certificate to be signed](http://security.stackexchange.com/questions/16595/what-does-it-mean-for-a-digital-certificate-to-be-signed)
+8. [A primer on p12/pfx file info](https://www.ssl.com/how-to/create-a-pfx-p12-certificate-file-using-openssl/)
+
+## Other supporting links I found helpful
+ - [How does ssl/tls work?](http://security.stackexchange.com/questions/20803/how-does-ssl-tls-work)
+ - [How do the processes for digital certificates signatures and ssl work](http://security.stackexchange.com/questions/7421/how-do-the-processes-for-digital-certificates-signatures-and-ssl-work)
+ - [official certutil documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/tools/NSS_Tools_certutil)
+ - [Supporting redhat documentation on managing an nss certificate database](https://access.redhat.com/documentation/en-US/Red_Hat_Certificate_System/8.0/html/Admin_Guide/Managing_the_Certificate_Database.html)
