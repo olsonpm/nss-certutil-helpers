@@ -134,10 +134,12 @@ $ nch export-cert --nickname 'test-root-nick' --cert-only
 
 
 # Under the hood
+$ oldUmask="$(umask)"
+$ umask 277
 $ pk12util -o ./test-root-nick.p12 -d . -n 'test-root-nick' -W ''
+$ umask "${oldUmask}"
 $ openssl pkcs12 -in ./test-root-nick.p12 -out ./test-root-nick.crt.pem -nokeys -clcerts -password 'pass:'
 $ rm ./test-root-nick.p12
-$ chmod 400 ./test-root-nick.crt.pem
 ```
 
 6) And import the cert.  By importing the root certificate into our server
@@ -205,7 +207,7 @@ $ nch import-cert --filepath test-client-nick.crt \
   --nickname 'test-client-nick'
 
 # Under the hood (server example only)
-$ certutil -A -n 'test-server-nick' -t ',,' -i test-client-nick.crt -d .
+$ certutil -A -n 'test-server-nick' -t ',,' -i test-server-nick.crt -d .
 ```
 
 10) Export the data necessary for each our node server and curl script (client)
@@ -237,6 +239,8 @@ $ nch export-cert --nickname 'test-client-nick' \
 $ nch export-cert --nickname 'test-client-nick' \
   --key-only \
   --filepath ../../curl/test-client-nick.key.pem
+
+# Under the hood will be similar to step 5 which also exports a cert
 ```
 
 11) You are now all set up to create the node server.  I have a minimal one

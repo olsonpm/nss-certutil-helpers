@@ -25,6 +25,7 @@ __export_cert_keyOnly=0
 __export_cert_format='pem'
 __export_cert_tmp=''
 __export_cert_contentsId=''
+__export_cert_oldUmask=''
 
 
 #------#
@@ -166,7 +167,10 @@ export_cert() {
     __export_cert_fpath="${__export_cert_nick}.${__export_cert_contentsId}.pem"
   fi
 
+  __export_cert_oldUmask="$(umask)"
+  umask 277
   __export_cert_tmp="${__export_cert_fpath%.*}.p12"
+  umask "${__export_cert_oldUmask}"
 
   if file_exists "${__export_cert_tmp}"; then
     log_error "Please remove the conflicting file '${__export_cert_fpath}' and try again\n" \
