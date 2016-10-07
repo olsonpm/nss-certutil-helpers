@@ -3,38 +3,34 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 ## Table of Contents
-- [What is it?](#what-is-it)
-- [Why create it?](#why-create-it)
-- [How can it help me?](#how-can-it-help-me)
-- [Before I get technical](#before-i-get-technical)
+- [Intro](#intro)
 - [To install](#to-install)
 - [The functionality](#the-functionality)
 - [Tutorial](#tutorial)
-- [Referenced documentation](#referenced-documentation)
-- [Other supporting links I found helpful](#other-supporting-links-i-found-helpful)
+- [External Links](#external-links)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
+## Intro
 
-
-## What is it?
+### What is it?
 
 Just a friendly, narrow-focused command line wrapper to `certutil` with the goal
 of easily creating mutual ssl authentication<sup>[5](#referenced-documentation)</sup>.
 
 
-## Why create it?
+### Why create it?
 Because existing documentation for both openssl and nss is not sufficient to get
 anyone started who doesn't already understand the ssl process.  Also both the
 openssl and certutil cli experiences are abysmal.
 
 
-## How can it help me?
+### How can it help me?
 These helpers can serve as a starting point, as a reference, and as a utility
 for personal ssl use.
 
 
-## Before I get technical
+### Before I get technical
 Supporting documentation I found helpful is listed at the bottom, though a large
 thanks is due to Firstyear<sup>[1](#referenced-documentation)</sup> whose blog
 post listed and explained the pieces fairly well.  It was just missing an
@@ -212,6 +208,7 @@ $ certutil -A -n 'test-server-nick' -t ',,' -i test-server-nick.crt -d .
 
 10) Export the data necessary for each our node server and curl script (client)
  - p12 format information<sup>[8](#referenced-documentation)</sup>
+
 ```sh
 # The p12 file encompasses the certificate chain as well as the private key
 $ cd ../server
@@ -269,7 +266,9 @@ curl --cacert ./test-root-nick.crt.pem \
 
 ### You done breh
 
-## Referenced documentation
+## External Links
+
+### Referenced documentation
 1. [certutil how-to](http://firstyear.id.au/blog/html/2014/07/10/NSS-OpenSSL_Command_How_to:_The_complete_list..html)
 2. Single level hierarchy (as opposed to multi-level)
  - A single level hierarchy just means there doesn't exist intermediary
@@ -285,7 +284,7 @@ curl --cacert ./test-root-nick.crt.pem \
 7. [What does it mean for a digital certificate to be signed](http://security.stackexchange.com/questions/16595/what-does-it-mean-for-a-digital-certificate-to-be-signed)
 8. [A primer on p12/pfx file info](https://www.ssl.com/how-to/create-a-pfx-p12-certificate-file-using-openssl/)
 
-## Other supporting links I found helpful
+### Other supporting links I found helpful
  - [How does ssl/tls work?](http://security.stackexchange.com/questions/20803/how-does-ssl-tls-work)
  - [How do the processes for digital certificates signatures and ssl work](http://security.stackexchange.com/questions/7421/how-do-the-processes-for-digital-certificates-signatures-and-ssl-work)
  - [official certutil documentation](https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS/tools/NSS_Tools_certutil)
