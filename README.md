@@ -56,7 +56,7 @@ $ . ~/.zshrc
 
 This program should be self-exploratory.  Type `nch --help` to begin.
 
-Understand a lot of the naming I used is specific to the context of this tool.
+A lot of the naming I used is specific to the context of this tool.
 For instance I use the term 'root' when really 'ca' would be more general,
 however since this tool only addresses a single-level hierarchy
 <sup>[2](#referenced-documentation)</sup>, 'root' is more apt.
