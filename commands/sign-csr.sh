@@ -108,7 +108,7 @@ sign_csr() {
   caNick="${__sign_csr_caNick}"
   csrFpath="${__sign_csr_csrFpath}"
 
-  certutil -C -d . -i "${csrFpath}" -c "${caNick}"
+  certutil -C -d 'sql:.' -i "${csrFpath}" -c "${caNick}"
 }
 
 

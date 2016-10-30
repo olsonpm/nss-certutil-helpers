@@ -107,7 +107,7 @@ import_cert() {
 
     log_error "It looks like you're in a directory with the old nss databases\
  which nch doesn't support.\n  (e.g. cert8.db instead of the sqlite cert9.db)\n\
-Please look into certutil documentation explaining how to upgrade these files\n"  
+Please look into certutil documentation explaining how to upgrade these files\n"
     usage 2
     exit 1
   fi
@@ -132,7 +132,7 @@ Please look into certutil documentation explaining how to upgrade these files\n"
   fi
   nick="${__import_cert_nick}"
   fpath="${__import_cert_fpath}"
-  certutil -A -n "${nick}" -t "${trust}" -i "${fpath}" -d .
+  certutil -A -n "${nick}" -t "${trust}" -i "${fpath}" -d 'sql:.'
 
   printf "Done!\n\n"
 }

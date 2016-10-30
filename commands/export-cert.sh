@@ -188,14 +188,14 @@ export_cert() {
   # no errors! woo woo
 
   # shellcheck disable=2086
-  pk12util -o "${__export_cert_tmp}" -d . -n "${__export_cert_nick}" -W '' >/dev/null 2>&1
+  pk12util -o "${__export_cert_tmp}" -d 'sql:.' -n "${__export_cert_nick}" -W '' >/dev/null 2>&1
 
   if [ $? -ne 0 ]; then
     rm -f "${__export_cert_tmp}"
-    cmd="pk12util -o ${__export_cert_tmp} -d . -n '${__export_cert_nick}' -W ''"
+    cmd="pk12util -o ${__export_cert_tmp} -d 'sql:.' -n '${__export_cert_nick}' -W ''"
     printf "Error occurred while running the following command %b\n\n" "${cmd}" >&2
 
-    pk12util -o "${__export_cert_tmp}" -d . -n "${__export_cert_nick}" -W ''
+    pk12util -o "${__export_cert_tmp}" -d 'sql:.' -n "${__export_cert_nick}" -W ''
     exit 1
   fi
 

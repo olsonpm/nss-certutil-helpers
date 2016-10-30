@@ -129,7 +129,7 @@ create_db() {
   cn="${__create_cert_cn}"
   nick="${__create_cert_nick}"
 
-  certutil -S -n "${nick}" -t "${trust}" "${selfsigned}" -d . -s "CN=${cn}"
+  certutil -S -n "${nick}" -t "${trust}" "${selfsigned}" -d 'sql:.' -s "CN=${cn}"
 
   printf "Done!\n\n"
 }

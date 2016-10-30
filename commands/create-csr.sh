@@ -90,7 +90,7 @@ create_csr() {
 
   # no errors! omg shoes
 
-  certutil -d . -R -s "CN=${__create_csr_cn}"
+  certutil -d 'sql:.' -R -s "CN=${__create_csr_cn}"
 }
 
 
