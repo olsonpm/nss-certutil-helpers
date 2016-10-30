@@ -101,9 +101,19 @@ import_cert() {
     exit 1
   fi
 
-  if ! file_exists "./cert9.db" \
-    || ! file_exists "./key4.db" \
-    || ! file_exists "./pkcs11.txt"; then
+  # first group is the new files
+  # second is for the old files (older certutil versions)
+  if ! ( \
+      ( file_exists "./cert9.db" \
+      && file_exists "./key4.db" \
+      && file_exists "./pkcs11.txt" \
+      ) \
+    || \
+      ( file_exists "./cert8.db" \
+      && file_exists "./key3.db" \
+      && file_exists "secmod.db" \
+      ) \
+    ); then
 
     log_error "This command requires you to be in a directory with an NSS database\n"
     usage 2
