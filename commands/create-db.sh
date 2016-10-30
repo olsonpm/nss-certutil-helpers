@@ -87,7 +87,7 @@ create_db() {
     mkdir -p "${__create_db_dir}"
   fi
 
-  certutil -N -d "${__create_db_dir}" --empty-password
+  certutil -N -d "sql:${__create_db_dir}" --empty-password
 
   printf "Done!\n\n"
 }
