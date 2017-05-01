@@ -152,11 +152,12 @@ $ certutil -A -n 'test-root-nick' -t 'C,C,C' -i ../root/test-root-nick.crt -d .
 ```
 
 7) Create a CSR for our client and server each.  
-<br>
+
 \**Note the server has a common-name 'localhost'.  This is the domain our node
 server will be serving, and ssl requires the common-name to match the domain.
 There's no functional requirement for the root and client common-names besides
 their being unique*
+
 ```sh
 $ cd ../server
 $ nch create-csr --common-name 'localhost' > test-server-nick.csr
