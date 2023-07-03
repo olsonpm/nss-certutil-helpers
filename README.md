@@ -151,7 +151,7 @@ $ nch import-cert --nickname 'test-root-nick' \
 $ certutil -A -n 'test-root-nick' -t 'C,C,C' -i ../root/test-root-nick.crt -d .
 ```
 
-7) Create a CSR for our client and server each.  
+7) Create a CSR for our client and server each.
 
 \**Note the server has a common-name 'localhost'.  This is the domain our node
 server will be serving, and ssl requires the common-name to match the domain.
@@ -228,7 +228,7 @@ $ nch export-cert --nickname 'test-server-nick' \
 #
 $ cd ../root
 $ nch export-cert --nickname 'test-root-nick' \
-  --cert-only
+  --cert-only \
   --filepath ../../curl/test-root-nick.crt.pem
 $ cd ../client
 $ nch export-cert --nickname 'test-client-nick' \

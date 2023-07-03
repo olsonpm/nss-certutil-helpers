@@ -119,9 +119,11 @@ create_db() {
 
   trust=''
   selfsigned=''
+  additionalFlags=''
   if [ "${__create_cert_signedBy}" = "self" ]; then
-    trust='C,C,C'
+    trust='TC,TC,TC'
     selfsigned='-x'
+    additionalFlags='--keyUsage certSigning'
   else
     trust=',,'
   fi
@@ -129,7 +131,15 @@ create_db() {
   cn="${__create_cert_cn}"
   nick="${__create_cert_nick}"
 
-  certutil -S -n "${nick}" -t "${trust}" "${selfsigned}" -d 'sql:.' -s "CN=${cn}"
+  head -c 100 < /dev/urandom > ./randfile
+  certutil -S -z ./randfile \
+    -n "${nick}" \
+    -t "${trust}" \
+    "${selfsigned}" \
+    -d 'sql:.' \
+    -s "CN=${cn}" \
+    ${additionalFlags}
+  rm ./randfile
 
   printf "Done!\n\n"
 }

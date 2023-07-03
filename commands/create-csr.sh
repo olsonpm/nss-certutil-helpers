@@ -90,7 +90,9 @@ create_csr() {
 
   # no errors! omg shoes
 
-  certutil -d 'sql:.' -R -s "CN=${__create_csr_cn}"
+  head -c 100 < /dev/urandom > ./randfile
+  certutil -d 'sql:.' -R -s "CN=${__create_csr_cn}" -z ./randfile
+  rm ./randfile
 }
 
 
