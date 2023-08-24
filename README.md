@@ -121,7 +121,9 @@ $ nch create-cert --common-name 'test-root-cn' \
 
 
 # Under the hood
-$ certutil -S -n 'test-root-nick' -t 'C,C,C' -x -d . -s 'CN=test-root-cn'
+$ head -c 100 < /dev/urandom > ./randfile
+$ certutil -S -z ./randfile -n 'test-root-nick' -t 'CT,CT,CT' -x -d 'sql:.' -s 'CN=test-root-cn' --keyUsage certSigning
+$ rm ./randfile
 ```
 
 5) Now let's export this certificate so we can import it into our server database.
@@ -132,7 +134,7 @@ $ nch export-cert --nickname 'test-root-nick' --cert-only
 # Under the hood
 $ oldUmask="$(umask)"
 $ umask 277
-$ pk12util -o ./test-root-nick.p12 -d . -n 'test-root-nick' -W ''
+$ pk12util -o ./test-root-nick.p12 -d 'sql:.' -n 'test-root-nick' -W ''
 $ umask "${oldUmask}"
 $ openssl pkcs12 -in ./test-root-nick.p12 -out ./test-root-nick.crt.pem -nokeys -clcerts -password 'pass:'
 $ rm ./test-root-nick.p12
@@ -148,7 +150,7 @@ $ nch import-cert --nickname 'test-root-nick' \
   --is-root
 
 # Under the hood
-$ certutil -A -n 'test-root-nick' -t 'C,C,C' -i ../root/test-root-nick.crt -d .
+$ certutil -A -n 'test-root-nick' -t 'C,C,C' -i ../root/test-root-nick.crt -d 'sql:.'
 ```
 
 7) Create a CSR for our client and server each.
@@ -167,7 +169,9 @@ $ nch create-csr --common-name 'test-client-cn' > test-client-nick.csr
 
 
 # Under the hood (server example only)
-$ certutil -d . -R -s 'CN=localhost'
+$ head -c 100 < /dev/urandom > ./randfile
+$ certutil -d 'sql:.' -R -s 'CN=localhost' -z ./randfile
+$ rm ./randfile
 ```
 
 8) Sign the CSR using our root CA<sup>[7](#referenced-documentation)</sup>.
@@ -186,7 +190,7 @@ $ nch sign-csr --ca-nickname 'test-root-nick' \
 
 
 # Under the hood (server example only)
-$ certutil -C -d . -i ../server/test-server-nick.csr -c 'test-root-nick'
+$ certutil -C -d 'sql:.' -i ../server/test-server-nick.csr -c 'test-root-nick'
 ```
 
 9) Import the signed certificate.  This will complete our server and client
@@ -204,7 +208,7 @@ $ nch import-cert --filepath test-client-nick.crt \
   --nickname 'test-client-nick'
 
 # Under the hood (server example only)
-$ certutil -A -n 'test-server-nick' -t ',,' -i test-server-nick.crt -d .
+$ certutil -A -n 'test-server-nick' -t ',,' -i test-server-nick.crt -d 'sql:.'
 ```
 
 10) Export the data necessary for each our node server and curl script (client)
